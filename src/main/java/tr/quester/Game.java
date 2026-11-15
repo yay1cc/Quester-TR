@@ -5,6 +5,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 public record Game(String name, String category, String platform, String url) {
+    private static final Locale TURKISH = Locale.forLanguageTag("tr-TR");
+
     public Game {
         name = Objects.requireNonNull(name, "Oyun adı").strip();
         category = Objects.requireNonNull(category, "Kategori").strip();
@@ -18,9 +20,9 @@ public record Game(String name, String category, String platform, String url) {
     }
 
     public boolean matches(String query) {
-        String q = query == null ? "" : query.toLocaleLowerCase(Locale.forLanguageTag("tr-TR")).strip();
-        return name.toLocaleLowerCase(Locale.forLanguageTag("tr-TR")).contains(q)
-                || category.toLocaleLowerCase(Locale.forLanguageTag("tr-TR")).contains(q)
-                || platform.toLocaleLowerCase(Locale.forLanguageTag("tr-TR")).contains(q);
+        String q = query == null ? "" : query.strip().toLowerCase(TURKISH);
+        return name.toLowerCase(TURKISH).contains(q)
+                || category.toLowerCase(TURKISH).contains(q)
+                || platform.toLowerCase(TURKISH).contains(q);
     }
 }
