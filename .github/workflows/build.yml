@@ -1,0 +1,35 @@
+name: Windows build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  test-and-package:
+    runs-on: windows-latest
+    steps:
+      - name: Kaynak kodunu indir
+        uses: actions/checkout@v4
+      - name: Java 21 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Maven testleri ve JAR
+        run: mvn -B clean verify
+      - name: WiX kur
+        run: choco install wixtoolset --no-progress -y
+      - name: Windows EXE oluştur
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          jpackage --type exe --name Quester-TR --app-version 0.1.0 --input target --main-jar quester-tr.jar --main-class tr.quester.App --dest dist --win-menu --win-shortcut --win-per-user-install
+      - name: EXE çıktısını sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: Quester-TR-Windows-EXE
+          path: dist/*.exe
